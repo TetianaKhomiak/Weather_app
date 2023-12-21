@@ -4,6 +4,8 @@ function displayTemperature(response) {
   let cityElement = document.querySelector("#current-city");
   cityElement.innerHTML = response.data.name;
   temperatureElement.innerHTML = temperature;
+  let searchInputElement = document.querySelector("#search-input");
+  searchInputElement.value = "";
 }
 
 function search(event) {
