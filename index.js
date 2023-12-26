@@ -1,21 +1,37 @@
-function displayTemperature(response) {
+function displayWeatherData(response) {
+  console.log(response);
   let temperatureElement = document.querySelector("#current-temperature");
-  let temperature = Math.round(response.data.main.temp);
-  let cityElement = document.querySelector("#current-city");
-  cityElement.innerHTML = response.data.name;
-  temperatureElement.innerHTML = temperature;
   let searchInputElement = document.querySelector("#search-input");
+  let cityElement = document.querySelector("#current-city");
+  let date = new Date(response.data.dt * 1000);
+  let timeElement = document.querySelector("#current-date");
+  let descriptionElement = document.querySelector("#description");
+  let humidityElement = document.querySelector("#humidity");
+  let windSpeedElement = document.querySelector("#wind-speed");
+  let icon = document.querySelector("#current-temperature-icon");
+
+  cityElement.innerHTML = response.data.name;
+  temperatureElement.innerHTML = Math.round(response.data.main.temp);
+  timeElement.innerHTML = formatDate(date);
+  descriptionElement.innerHTML = response.data.weather[0].description;
+  humidityElement.innerHTML = `${response.data.main.humidity}%`;
+  windSpeedElement.innerHTML = `${response.data.wind.speed} km/h`;
+  icon.innerHTML = `<img src="${response.data.weather[0].icon}" />`;
+
   searchInputElement.value = "";
 }
 
-function search(event) {
+function searchCity(city) {
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=82ab0a2aa3df9613f110332cc0bfe286&units=metric`;
+  axios.get(apiUrl).then(displayWeatherData);
+}
+searchCity("Kyiv");
+
+function handleSearch(event) {
   event.preventDefault();
   let searchInputElement = document.querySelector("#search-input");
   let city = searchInputElement.value;
-
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=82ab0a2aa3df9613f110332cc0bfe286&units=metric`;
-
-  axios.get(apiUrl).then(displayTemperature);
+  searchCity(city);
 }
 
 function formatDate(date) {
@@ -46,9 +62,4 @@ function formatDate(date) {
 }
 
 let searchForm = document.querySelector("#search-form");
-searchForm.addEventListener("submit", search);
-
-let currentDateELement = document.querySelector("#current-date");
-let currentDate = new Date();
-
-currentDateELement.innerHTML = formatDate(currentDate);
+searchForm.addEventListener("submit", handleSearch);
